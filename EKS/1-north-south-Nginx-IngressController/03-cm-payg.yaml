@@ -1,0 +1,106 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cm-payg
+data:
+  csrx_config: |
+    system {
+      root-authentication {
+        encrypted-password "$6$a5qY0$0xenDXYOf1vzikKg7WCt2O6ABcPnKruc75DcSGkPI1EvyxchyK8bFc3Uskuj68bm9DjXJPuTUowBpAikNgeIZ0"; ## SECRET-DATA
+      }
+      services {
+        ssh {
+            root-login allow;
+        }
+      }
+    }
+    interfaces {
+     ge-0/0/0 {
+        unit 0;
+     }
+     ge-0/0/1 {
+        unit 0;
+     }
+    }
+    security {
+        policies {
+            default-policy {
+                permit-all;
+            }
+        }
+        zones {
+            security-zone trust {
+                host-inbound-traffic {
+                    system-services {
+                        all;
+                    }
+                    protocols {
+                        all;
+                    }
+                }
+                interfaces {
+                    ge-0/0/0.0;
+                }
+            }
+            security-zone untrust {
+                host-inbound-traffic {
+                    system-services {
+                        all;
+                    }
+                    protocols {
+                        all;
+                    }
+                }
+                interfaces {
+                    ge-0/0/1.0;
+                }
+            }
+        }
+        nat {
+            source {
+                rule-set s-forward {
+                    from zone trust;
+                    to zone untrust;
+                    rule s-forward-rule {
+                        match {
+                            source-address 0.0.0.0/0;
+                        }
+                        then {
+                            source-nat {
+                                interface;
+                            }
+                        }
+                    }
+                }
+            }
+            destination {
+                pool forward-pool {
+                    address 10.100.144.59/32 port 80;
+                }
+                rule-set forword {
+                    from zone trust;
+                    rule forward-rule {
+                        match {
+                            destination-address 0.0.0.0/0;
+                            destination-port {
+                                80;
+                            }
+                        }
+                        then {
+                            destination-nat {
+                                pool {
+                                    forward-pool;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    routing-options {
+        static {
+               route 10.100.144.59/32 next-hop 51.0.0.1;
+        }
+    }
+---

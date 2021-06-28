@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csrx1-payg
+  labels:
+    app: csrx1-payg
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: csrx1-payg
+  template:
+    metadata:
+      name: csrx1-payg
+      labels:
+        app: csrx1-payg
+      annotations:
+        k8s.v1.cni.cncf.io/networks: br-51@eth1, br-52@eth2
+    spec:      
+      serviceAccountName: csrxpod
+      containers:
+      - name: csrx1-payg
+        securityContext:
+           privileged: true
+        #image: 298183613488.dkr.ecr.us-west-2.amazonaws.com/payg:0221 
+        image: 610418335740.dkr.ecr.us-west-2.amazonaws.com/csrx-ft:0505eval
+        ports:
+          - containerPort: 80
+        env:
+        - name: CSRX_SIZE
+          value: "large"
+        - name: CSRX_HUGEPAGES
+          value: "no"
+        - name: CSRX_PACKET_DRIVER
+          value: "interrupt"
+        - name: CSRX_FORWARD_MODE
+          value: "routing"
+        - name: CSRX_AUTO_ASSIGN_IP
+          value: "yes"
+        - name: CSRX_MGMT_PORT_REORDER
+          value: "yes"
+        - name: CSRX_TCP_CKSUM_CALC
+          value: "yes"
+        - name: CSRX_JUNOS_CONFIG
+          value: "/var/jail/csrx_config"
+        volumeMounts:
+        - name: disk
+          mountPath: "/dev"
+        - name: config
+          mountPath: "/var/jail"
+      volumes:
+      - name: disk
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: config
+        configMap:
+          name: cm-payg
+          items:
+          - key: csrx_config
+            path: csrx_config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: csrx1-payg
+  name: csrx1-payg
+spec:
+  selector:
+      app: csrx1-payg
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

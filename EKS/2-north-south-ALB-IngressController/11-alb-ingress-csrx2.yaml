@@ -1,0 +1,14 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: csrx2-alb-ingress 
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing  
+   #alb.ingress.kubernetes.io/target-type: ip
+spec:
+  backend:
+    serviceName: csrx2-byol
+    servicePort: 80

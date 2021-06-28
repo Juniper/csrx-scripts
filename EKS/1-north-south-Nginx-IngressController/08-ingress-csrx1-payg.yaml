@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: csrx1-nginx-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.com/health-checks: "true"
+spec:
+  backend:
+    serviceName: csrx1-payg
+    servicePort: 80
