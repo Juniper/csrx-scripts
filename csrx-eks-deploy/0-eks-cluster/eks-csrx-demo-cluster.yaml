@@ -1,0 +1,21 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: csrx-eks-demo
+  region: us-west-2
+  version: "1.18"
+vpc:
+  clusterEndpoints:
+    privateAccess: false
+    publicAccess: true
+nodeGroups:
+  - name: csrx-eks-demo-ng1
+    instanceType: t3.medium # 2vcpu,4GiB
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 3
+    privateNetworking: false
+    ssh:
+      allow: true
+      publicKeyPath: ~/.ssh/id_rsa.pub

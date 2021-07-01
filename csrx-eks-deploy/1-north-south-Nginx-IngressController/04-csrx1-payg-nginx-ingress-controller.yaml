@@ -22,8 +22,7 @@ spec:
       - name: csrx1-payg
         securityContext:
            privileged: true
-        #image: 298183613488.dkr.ecr.us-west-2.amazonaws.com/payg:0221 
-        image: 610418335740.dkr.ecr.us-west-2.amazonaws.com/csrx-ft:0505eval
+        image: <csrx-image>
         ports:
           - containerPort: 80
         env:

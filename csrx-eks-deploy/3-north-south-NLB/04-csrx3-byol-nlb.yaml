@@ -22,7 +22,7 @@ spec:
       - name: csrx3-byol-nlb
         securityContext:
            privileged: true
-        image: 298183613488.dkr.ecr.us-west-2.amazonaws.com/byol:0221 
+        image: <csrx-image> 
         ports:
           - containerPort: 80
         env:

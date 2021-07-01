@@ -1,0 +1,74 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: etcd-data
+  namespace: kube-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: etcd
+  namespace: kube-system
+spec: 
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  tolerations:
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoSchedule
+    operator: Exists
+  containers: 
+    - name: "etcd"
+      image: "gcr.io/etcd-development/etcd:v3.4.14"
+      env:
+      - name: ETCDCTL_API
+        value: "3"
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      command:
+      - /usr/local/bin/etcd
+      args: 
+        - "--name=etcd0"
+        - "--advertise-client-urls=http://$(POD_IP):2379"
+        - "--listen-client-urls=http://0.0.0.0:2379"
+        - "--listen-peer-urls=http://0.0.0.0:2380"
+        - "--data-dir=/etcd-data"
+        - "--election-timeout=1000"
+        - "--heartbeat-interval=100"
+        - "--snapshot-count=10000"
+        - "--max-snapshots=5"
+        - "--max-wals=5"
+        - "--enable-v2"
+        - "--initial-advertise-peer-urls=http://$(POD_IP):2380"
+        - "--initial-cluster=etcd0=http://$(POD_IP):2380"
+        - "--initial-cluster-state=new"
+        - "--initial-cluster-token=cluster0"
+      ports:
+        - name: client
+          containerPort: 2379
+          protocol: "TCP"
+        - name: peer
+          containerPort: 2380
+          protocol: "TCP"
+      resources:
+        limits:
+          cpu: "1000m"
+          memory: "256Mi"
+      volumeMounts:
+        - name: "etcd-data"
+          mountPath: /etcd-data
+  volumes:
+    - name: "etcd-data"
+      persistentVolumeClaim:
+        claimName: etcd-data
