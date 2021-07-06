@@ -6,7 +6,7 @@ The scripts in these directories will help you:
        b. Microsegmentation a.k.a East/ West Firewall 
        
 
-****Pre-requisites****
+## Pre-requisites
 
 1. Install the following essential tools: 
        aws cli - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html 
@@ -77,7 +77,7 @@ kubectl apply -f kube-flannel.yaml
 ### associate iam role with current eks cluster (create service account for cSRX Pods)
 ```eksctl utils associate-iam-oidc-provider --cluster=csrx-eks-demo --approve --profile saml```
 
-****Preparation for Use Cases deployment****
+## Preparation for Use Cases deployment
 
 ### Install everything in the folder preparation/ 
 ```kubectl apply -f preparation/```
