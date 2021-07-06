@@ -6,7 +6,7 @@ The scripts in these directories will help you:
        b. Microsegmentation a.k.a East/ West Firewall 
        
 
-## Pre-requisites
+# Pre-requisites
 
 1. Install the following essential tools: 
        aws cli - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html 
@@ -63,12 +63,12 @@ git clone https://github.com/intel/multus-cni
 
 ### modify ETCD_IP and install flannel cni (Flannel gets the IP addresses from the 192.168 network to assign to the container pods)
 
-## get etcd POD IP
+### get etcd POD IP
 ```
 kubectl get pod -A -o wide | grep etcd  
 --etcd-endpoints=http://etcd-pod-ip:2379   
 ```
-## replace in this line in kube-flannel.yaml
+### replace in this line in kube-flannel.yaml
 ```
 sed -i '' -e 's/192.168.87.24/192.168.87.23/g' kube-flannel.yml
 kubectl apply -f kube-flannel.yaml
@@ -136,7 +136,7 @@ eksctl create iamserviceaccount \
 ### install metrics-server
 ```kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml```
 
-#### edit deployment metrics-server in namespace kuby-system
+### edit deployment metrics-server in namespace kuby-system
 ```
 kubectl edit deployment metrics-server -n kube-system 
 hostNetwork: true          ## under spec:template:spec (the same level with containers)
@@ -210,7 +210,7 @@ hostNetwork: true          ## under spec:template:spec (the same level with cont
 ### access backend web via csrx-byol service
 ```frontend# curl http://csrx-svc-ip:port```
 
-## SSH access cSRX for management via csrx-ssh service
+### SSH access cSRX for management via csrx-ssh service
 ```ssh root@csrx-ssh service LoadBalancer external ip address```
 
 ***
